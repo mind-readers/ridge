@@ -184,7 +184,7 @@ def ridge_corr(Rstim, Pstim, Rresp, Presp, alphas, normalpha=False, corrmin=0.2,
 
 def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunks,
                     corrmin=0.2, joined=None, singcutoff=1e-10, normalpha=False, single_alpha=False,
-                    use_corr=True, logger=ridge_logger):
+                    use_corr=True, logger=ridge_logger, test_bootstrap=False):
     """Uses ridge regression with a bootstrapped held-out set to get optimal alpha values for each response.
     [nchunks] random chunks of length [chunklen] will be taken from [Rstim] and [Rresp] for each regression
     run.  [nboots] total regression runs will be performed.  The best alpha value for each response will be
@@ -265,7 +265,10 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     valinds = [] # Will hold the indices into the validation data for each bootstrap
     
     Rcmats = []
+    k = 0
     for bi in counter(range(nboots), countevery=1, total=nboots):
+        if test_bootstrap:
+            random.seed(k)
         logger.info("Selecting held-out test set..")
         allinds = range(nresp)
         indchunks = zip(*[iter(allinds)]*chunklen)
