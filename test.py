@@ -27,12 +27,12 @@ Pstim = features[TR:]
 wt_test, corr_test, valphas_test, bscorrs_test, valinds_test = bootstrap_ridge_test(Rstim, Rresp, Pstim, Presp,
                                                       alphas=np.logspace(-2, 2, 20),
                                                       nboots=5,
-                                                      chunklen=10, nchunks=15)
+                                                      chunklen=10, nchunks=15, test_bootstrap=True)
 
 wt, corr, valphas, bscorrs, valinds = bootstrap_ridge(Rstim, Rresp, Pstim, Presp,
                                                       alphas=np.logspace(-2, 2, 20),
                                                       nboots=5,
-                                                      chunklen=10, nchunks=15)
+                                                      chunklen=10, nchunks=15, test_bootstrap=True)
 
 for wt_cur in wt_test:
     if wt_cur not in wt:
