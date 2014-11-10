@@ -3,7 +3,7 @@
 #SBATCH --job-name=mpi-test
 #SBATCH --output=mpi-test.log
 #
-#SBATCH --ntasks=1
+#SBATCH --ntasks=3
 #SBATCH --cpus-per-task=8
 #SBATCH --time=00:30:00
 

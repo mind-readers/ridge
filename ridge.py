@@ -270,14 +270,20 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     size = comm.Get_size()
 
     local_boots = nboots / size
+
+    local_Rcmats = []
+#    for bi in counter(range(nboots), countevery=1, total=nboots):
+    if test_bootstrap:
+        k = rank*local_boots
+    else:
+        k = "None"
+
     if rank == size-1:
         local_boots += nboots % size
 
-    local_Rcmats = []
-    k = 0
-#    for bi in counter(range(nboots), countevery=1, total=nboots):
     for i in range(local_boots):
-        logger.info("Rank " + str(rank) + " running bootstrap " + str(i+1) + "/"+ str(local_boots))
+        logger.info("Rank " + str(rank) + " running bootstrap " + str(i+1) +
+                "/"+ str(local_boots) + " with seed " + str(k))
         if test_bootstrap:
             random.seed(k)
         logger.info("Selecting held-out test set..")
@@ -303,7 +309,8 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
         local_Rcmats.append(Rcmat)
         #print("RANK: " + str(rank) + str(locals()))
         #Rcmats.append(Rcmat)
-        # k += 1
+        if test_bootstrap:
+            k += 1
 
     global_Rcmats = comm.allgather(local_Rcmats)
     comm.barrier()
@@ -315,6 +322,7 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
         Rcmats += local_bootstrap_result
     for local_valinds_result in global_valinds:
         valinds += local_valinds_result
+    valinds = np.array(valinds)
 
     
     # Find best alphas
