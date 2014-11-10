@@ -283,7 +283,7 @@ def bootstrap_ridge_test(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, n
         PRresp = Rresp[heldinds,:]
         
         # Run ridge regression using this test set
-        Rcmat = ridge_corr(RRstim, PRstim, RRresp, PRresp, alphas,
+        Rcmat = ridge_corr_test(RRstim, PRstim, RRresp, PRresp, alphas,
                            corrmin=corrmin, singcutoff=singcutoff,
                            normalpha=normalpha, use_corr=use_corr,
                            logger=logger)
@@ -336,7 +336,7 @@ def bootstrap_ridge_test(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, n
 
     # Find weights
     logger.info("Computing weights for each response using entire training set..")
-    wt = ridge(Rstim, Rresp, valphas, singcutoff=singcutoff, normalpha=normalpha)
+    wt = ridge_test(Rstim, Rresp, valphas, singcutoff=singcutoff, normalpha=normalpha)
 
     # Predict responses on prediction set
     logger.info("Predicting responses for predictions set..")

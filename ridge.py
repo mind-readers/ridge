@@ -4,6 +4,7 @@ import logging
 from utils import mult_diag, counter
 import random
 import itertools as itools
+from mpi4py import MPI
 
 zs = lambda v: (v-v.mean(0))/v.std(0) ## z-score function
 
@@ -171,13 +172,13 @@ def ridge_corr(Rstim, Pstim, Rresp, Presp, alphas, normalpha=False, corrmin=0.2,
         Rcorr[np.isnan(Rcorr)] = 0
         Rcorrs.append(Rcorr)
         
-        log_template = "Training: alpha=%0.3f, mean corr=%0.5f, max corr=%0.5f, over-under(%0.2f)=%d"
-        log_msg = log_template % (a,
-                                  np.mean(Rcorr),
-                                  np.max(Rcorr),
-                                  corrmin,
-                                  (Rcorr>corrmin).sum()-(-Rcorr>corrmin).sum())
-        logger.info(log_msg)
+        #log_template = "Training: alpha=%0.3f, mean corr=%0.5f, max corr=%0.5f, over-under(%0.2f)=%d"
+        #log_msg = log_template % (a,
+        #                          np.mean(Rcorr),
+        #                          np.max(Rcorr),
+        #                          corrmin,
+        #                          (Rcorr>corrmin).sum()-(-Rcorr>corrmin).sum())
+        #logger.info(log_msg)
     
     return Rcorrs
 
@@ -262,20 +263,31 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     """
     nresp, nvox = Rresp.shape
     bestalphas = np.zeros((nboots, nvox))  # Will hold the best alphas for each voxel
-    valinds = [] # Will hold the indices into the validation data for each bootstrap
-    
-    Rcmats = []
+    local_valinds = [] # Will hold the indices into the validation data for each bootstrap
+
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    local_boots = nboots / size
+    if rank == size-1:
+        local_boots += nboots % size
+
+    local_Rcmats = []
     k = 0
-    for bi in counter(range(nboots), countevery=1, total=nboots):
+#    for bi in counter(range(nboots), countevery=1, total=nboots):
+    for i in range(local_boots):
+        logger.info("Rank " + str(rank) + " running bootstrap " + str(i+1) + "/"+ str(local_boots))
         if test_bootstrap:
             random.seed(k)
         logger.info("Selecting held-out test set..")
         allinds = range(nresp)
         indchunks = zip(*[iter(allinds)]*chunklen)
         random.shuffle(indchunks)
+        logger.info(str(indchunks[0:3]))
         heldinds = list(itools.chain(*indchunks[:nchunks]))
         notheldinds = list(set(allinds)-set(heldinds))
-        valinds.append(heldinds)
+        local_valinds.append(heldinds)
         
         RRstim = Rstim[notheldinds,:]
         PRstim = Rstim[heldinds,:]
@@ -288,7 +300,22 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
                            normalpha=normalpha, use_corr=use_corr,
                            logger=logger)
         
-        Rcmats.append(Rcmat)
+        local_Rcmats.append(Rcmat)
+        #print("RANK: " + str(rank) + str(locals()))
+        #Rcmats.append(Rcmat)
+        # k += 1
+
+    global_Rcmats = comm.allgather(local_Rcmats)
+    comm.barrier()
+    global_valinds = comm.allgather(local_valinds)
+    comm.barrier()
+    Rcmats = []
+    valinds = []
+    for local_bootstrap_result in global_Rcmats:
+        Rcmats += local_bootstrap_result
+    for local_valinds_result in global_valinds:
+        valinds += local_valinds_result
+
     
     # Find best alphas
     if nboots>0:

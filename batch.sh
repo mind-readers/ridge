@@ -3,9 +3,9 @@
 #SBATCH --job-name=mpi-test
 #SBATCH --output=mpi-test.log
 #
-#SBATCH --ntasks=8
+#SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
-#SBATCH --time=10:00
+#SBATCH --time=00:30:00
 
 # The above configs do the following
 # 	job-name: some human-readable string for a name

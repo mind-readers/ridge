@@ -1,0 +1,176 @@
+
+Inactive Modules:
+  1) mpi4py
+
+The following have been reloaded with a version change:
+  1) intel/13.0.2.146 => intel/14.0.1.106  2) mvapich2/1.9a2 => mvapich2/2.0b
+
+TACC: Starting up job 4420800
+TACC: Setting up parallel environment for MVAPICH2+mpispawn.
+TACC: Starting parallel tasks...
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 43.027
+INFO:ridge_corr:Training: alpha=0.010, mean corr=0.63908, max corr=0.95473, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.016, mean corr=0.63908, max corr=0.95473, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.026, mean corr=0.63908, max corr=0.95473, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.043, mean corr=0.63908, max corr=0.95473, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.070, mean corr=0.63908, max corr=0.95473, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.113, mean corr=0.63908, max corr=0.95473, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.183, mean corr=0.63908, max corr=0.95473, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.298, mean corr=0.63908, max corr=0.95473, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.483, mean corr=0.63909, max corr=0.95474, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=0.785, mean corr=0.63910, max corr=0.95475, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=1.274, mean corr=0.63914, max corr=0.95477, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=2.069, mean corr=0.63925, max corr=0.95483, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=3.360, mean corr=0.63952, max corr=0.95496, over-under(0.20)=2623
+INFO:ridge_corr:Training: alpha=5.456, mean corr=0.64008, max corr=0.95517, over-under(0.20)=2625
+INFO:ridge_corr:Training: alpha=8.859, mean corr=0.64084, max corr=0.95494, over-under(0.20)=2626
+INFO:ridge_corr:Training: alpha=14.384, mean corr=0.64026, max corr=0.95154, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=23.357, mean corr=0.63448, max corr=0.94088, over-under(0.20)=2626
+INFO:ridge_corr:Training: alpha=37.927, mean corr=0.62209, max corr=0.92918, over-under(0.20)=2625
+INFO:ridge_corr:Training: alpha=61.585, mean corr=0.60876, max corr=0.91612, over-under(0.20)=2617
+INFO:ridge_corr:Training: alpha=100.000, mean corr=0.59988, max corr=0.90751, over-under(0.20)=2619
+INFO:counter:1/5 items complete (1.79 items/second, 00:00:02 remaining)
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 42.487
+INFO:ridge_corr:Training: alpha=0.010, mean corr=0.63706, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.016, mean corr=0.63706, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.026, mean corr=0.63706, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.043, mean corr=0.63706, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.070, mean corr=0.63706, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.113, mean corr=0.63706, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.183, mean corr=0.63706, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.298, mean corr=0.63706, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.483, mean corr=0.63707, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=0.785, mean corr=0.63709, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=1.274, mean corr=0.63713, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=2.069, mean corr=0.63723, max corr=0.94956, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=3.360, mean corr=0.63749, max corr=0.94955, over-under(0.20)=2610
+INFO:ridge_corr:Training: alpha=5.456, mean corr=0.63805, max corr=0.94942, over-under(0.20)=2609
+INFO:ridge_corr:Training: alpha=8.859, mean corr=0.63881, max corr=0.94899, over-under(0.20)=2612
+INFO:ridge_corr:Training: alpha=14.384, mean corr=0.63829, max corr=0.94780, over-under(0.20)=2615
+INFO:ridge_corr:Training: alpha=23.357, mean corr=0.63268, max corr=0.94241, over-under(0.20)=2620
+INFO:ridge_corr:Training: alpha=37.927, mean corr=0.62052, max corr=0.93389, over-under(0.20)=2623
+INFO:ridge_corr:Training: alpha=61.585, mean corr=0.60736, max corr=0.92437, over-under(0.20)=2620
+INFO:ridge_corr:Training: alpha=100.000, mean corr=0.59858, max corr=0.91795, over-under(0.20)=2618
+INFO:counter:2/5 items complete (2.01 items/second, 00:00:01 remaining)
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 42.847
+INFO:ridge_corr:Training: alpha=0.010, mean corr=0.63830, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.016, mean corr=0.63830, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.026, mean corr=0.63830, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.043, mean corr=0.63830, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.070, mean corr=0.63830, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.113, mean corr=0.63830, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.183, mean corr=0.63830, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.298, mean corr=0.63830, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.483, mean corr=0.63831, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=0.785, mean corr=0.63833, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=1.274, mean corr=0.63837, max corr=0.95140, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=2.069, mean corr=0.63847, max corr=0.95141, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=3.360, mean corr=0.63873, max corr=0.95141, over-under(0.20)=2588
+INFO:ridge_corr:Training: alpha=5.456, mean corr=0.63928, max corr=0.95132, over-under(0.20)=2591
+INFO:ridge_corr:Training: alpha=8.859, mean corr=0.64005, max corr=0.95064, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=14.384, mean corr=0.63955, max corr=0.94719, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=23.357, mean corr=0.63394, max corr=0.93685, over-under(0.20)=2607
+INFO:ridge_corr:Training: alpha=37.927, mean corr=0.62173, max corr=0.92420, over-under(0.20)=2614
+INFO:ridge_corr:Training: alpha=61.585, mean corr=0.60849, max corr=0.91021, over-under(0.20)=2615
+INFO:ridge_corr:Training: alpha=100.000, mean corr=0.59966, max corr=0.90068, over-under(0.20)=2613
+INFO:counter:3/5 items complete (2.09 items/second, 00:00:00 remaining)
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 42.795
+INFO:ridge_corr:Training: alpha=0.010, mean corr=0.63728, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.016, mean corr=0.63728, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.026, mean corr=0.63728, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.043, mean corr=0.63728, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.070, mean corr=0.63728, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.113, mean corr=0.63728, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.183, mean corr=0.63728, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.298, mean corr=0.63729, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.483, mean corr=0.63729, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=0.785, mean corr=0.63731, max corr=0.94995, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=1.274, mean corr=0.63735, max corr=0.94994, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=2.069, mean corr=0.63746, max corr=0.94991, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=3.360, mean corr=0.63773, max corr=0.94980, over-under(0.20)=2598
+INFO:ridge_corr:Training: alpha=5.456, mean corr=0.63831, max corr=0.94940, over-under(0.20)=2600
+INFO:ridge_corr:Training: alpha=8.859, mean corr=0.63913, max corr=0.94828, over-under(0.20)=2605
+INFO:ridge_corr:Training: alpha=14.384, mean corr=0.63872, max corr=0.94580, over-under(0.20)=2615
+INFO:ridge_corr:Training: alpha=23.357, mean corr=0.63327, max corr=0.93531, over-under(0.20)=2621
+INFO:ridge_corr:Training: alpha=37.927, mean corr=0.62126, max corr=0.92328, over-under(0.20)=2622
+INFO:ridge_corr:Training: alpha=61.585, mean corr=0.60815, max corr=0.91061, over-under(0.20)=2617
+INFO:ridge_corr:Training: alpha=100.000, mean corr=0.59937, max corr=0.90176, over-under(0.20)=2611
+INFO:counter:4/5 items complete (2.14 items/second, 00:00:00 remaining)
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 42.812
+INFO:ridge_corr:Training: alpha=0.010, mean corr=0.63689, max corr=0.95043, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.016, mean corr=0.63689, max corr=0.95043, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.026, mean corr=0.63689, max corr=0.95043, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.043, mean corr=0.63689, max corr=0.95043, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.070, mean corr=0.63689, max corr=0.95043, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.113, mean corr=0.63689, max corr=0.95043, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.183, mean corr=0.63689, max corr=0.95043, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.298, mean corr=0.63689, max corr=0.95043, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.483, mean corr=0.63690, max corr=0.95044, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=0.785, mean corr=0.63692, max corr=0.95045, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=1.274, mean corr=0.63696, max corr=0.95049, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=2.069, mean corr=0.63707, max corr=0.95057, over-under(0.20)=2599
+INFO:ridge_corr:Training: alpha=3.360, mean corr=0.63733, max corr=0.95078, over-under(0.20)=2600
+INFO:ridge_corr:Training: alpha=5.456, mean corr=0.63789, max corr=0.95119, over-under(0.20)=2601
+INFO:ridge_corr:Training: alpha=8.859, mean corr=0.63866, max corr=0.95150, over-under(0.20)=2602
+INFO:ridge_corr:Training: alpha=14.384, mean corr=0.63815, max corr=0.94971, over-under(0.20)=2613
+INFO:ridge_corr:Training: alpha=23.357, mean corr=0.63252, max corr=0.94144, over-under(0.20)=2618
+INFO:ridge_corr:Training: alpha=37.927, mean corr=0.62028, max corr=0.92546, over-under(0.20)=2619
+INFO:ridge_corr:Training: alpha=61.585, mean corr=0.60701, max corr=0.90894, over-under(0.20)=2615
+INFO:ridge_corr:Training: alpha=100.000, mean corr=0.59815, max corr=0.90025, over-under(0.20)=2615
+INFO:counter:5/5 items complete (2.17 items/second, 00:00:00 remaining)
+INFO:ridge_corr:Finding best alpha for each voxel..
+INFO:ridge_corr:Computing weights for each response using entire training set..
+INFO:ridge_corr:Predicting responses for predictions set..
+INFO:ridge_corr:Rank 0 running bootstrap 1/5
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:[(790, 791, 792, 793, 794, 795, 796, 797, 798, 799), (10, 11, 12, 13, 14, 15, 16, 17, 18, 19), (770, 771, 772, 773, 774, 775, 776, 777, 778, 779)]
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 43.027
+INFO:ridge_corr:Rank 0 running bootstrap 2/5
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:[(790, 791, 792, 793, 794, 795, 796, 797, 798, 799), (10, 11, 12, 13, 14, 15, 16, 17, 18, 19), (770, 771, 772, 773, 774, 775, 776, 777, 778, 779)]
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 43.027
+INFO:ridge_corr:Rank 0 running bootstrap 3/5
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:[(790, 791, 792, 793, 794, 795, 796, 797, 798, 799), (10, 11, 12, 13, 14, 15, 16, 17, 18, 19), (770, 771, 772, 773, 774, 775, 776, 777, 778, 779)]
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 43.027
+INFO:ridge_corr:Rank 0 running bootstrap 4/5
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:[(790, 791, 792, 793, 794, 795, 796, 797, 798, 799), (10, 11, 12, 13, 14, 15, 16, 17, 18, 19), (770, 771, 772, 773, 774, 775, 776, 777, 778, 779)]
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 43.027
+INFO:ridge_corr:Rank 0 running bootstrap 5/5
+INFO:ridge_corr:Selecting held-out test set..
+INFO:ridge_corr:[(790, 791, 792, 793, 794, 795, 796, 797, 798, 799), (10, 11, 12, 13, 14, 15, 16, 17, 18, 19), (770, 771, 772, 773, 774, 775, 776, 777, 778, 779)]
+INFO:ridge_corr:Doing SVD...
+INFO:ridge_corr:Dropped 0 tiny singular values.. (U is now (850, 200))
+INFO:ridge_corr:Training stimulus has LSV norm: 43.027
+INFO:ridge_corr:Finding best alpha for each voxel..
+INFO:ridge_corr:Computing weights for each response using entire training set..
+INFO:ridge_corr:Predicting responses for predictions set..
+fail in wt: -0.0250692608333!=-0.000258761520111 at 0, 0
+[c442-202.stampede.tacc.utexas.edu:mpispawn_0][child_handler] MPI process (rank: 0, pid: 113161) exited with status 1
+TACC: MPI job exited with code: 1
+ 
+TACC: Shutdown complete. Exiting.
