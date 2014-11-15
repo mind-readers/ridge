@@ -1,0 +1,47 @@
+// TEST CONFIGS:
+//  - features: 2000
+//  - voxels: 30000
+//  - regression timepoints: 10000
+//  - prediction timepoints: 2000
+//  - MPI: no
+digraph {
+	graph [ranksep=0.25, fontname=Arial, nodesep=0.125];
+	node [fontname=Arial, style=filled, height=0, width=0, shape=box, fontcolor=white];
+	edge [fontname=Arial];
+	25 [color="#6fc908", fontcolor="#ffffff", fontsize="10.00", label="ridge_test:65:ridge_corr_test\n63.39%\n(0.36%)\n5×"];
+	25 -> 295 [color="#0ab21c", label="47.36%\n110×", arrowsize="0.69", fontsize="10.00", fontcolor="#0ab21c", labeldistance="1.89", penwidth="1.89"];
+	25 -> 329 [color="#0d1375", label="1.44%\n105×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d1375", labeldistance="0.50", penwidth="0.50"];
+	25 -> 31 [color="#0c5185", label="14.12%\n5×", arrowsize="0.38", fontsize="10.00", fontcolor="#0c5185", labeldistance="0.56", penwidth="0.56"];
+	31 [color="#0c6189", fontcolor="#ffffff", fontsize="10.00", label="linalg:1225:svd\n17.08%\n(16.95%)\n6×"];
+	88 [color="#0d257a", fontcolor="#ffffff", fontsize="10.00", label="type_check:312:nan_to_num\n5.56%\n(0.21%)\n3×"];
+	88 -> 540 [color="#0d1174", label="1.06%\n3×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d1174", labeldistance="0.50", penwidth="0.50"];
+	88 -> 428 [color="#0d1d78", label="3.78%\n3×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d1d78", labeldistance="0.50", penwidth="0.50"];
+	121 [color="#ff0000", fontcolor="#ffffff", fontsize="10.00", label="test:1:<module>\n100.00%\n(0.51%)\n1×"];
+	121 -> 295 [color="#0d327d", label="8.36%\n1×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d327d", labeldistance="0.50", penwidth="0.50"];
+	121 -> 222 [color="#0d1776", label="2.50%\n3×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d1776", labeldistance="0.50", penwidth="0.50"];
+	121 -> 127 [color="#ed7103", label="88.23%\n1×", arrowsize="0.94", fontsize="10.00", fontcolor="#ed7103", labeldistance="3.53", penwidth="3.53"];
+	127 [color="#ed7103", fontcolor="#ffffff", fontsize="10.00", label="ridge_test:185:bootstrap_ridge_test\n88.23%\n(3.04%)\n1×"];
+	127 -> 162 [color="#0d0f73", label="0.56%\n30000×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d0f73", labeldistance="0.50", penwidth="0.50"];
+	127 -> 133 [color="#0c6f8c", label="19.39%\n1×", arrowsize="0.44", fontsize="10.00", fontcolor="#0c6f8c", labeldistance="0.78", penwidth="0.78"];
+	127 -> 295 [color="#0d1375", label="1.42%\n1×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d1375", labeldistance="0.50", penwidth="0.50"];
+	127 -> 25 [color="#6fc908", label="63.39%\n5×", arrowsize="0.80", fontsize="10.00", fontcolor="#6fc908", labeldistance="2.54", penwidth="2.54"];
+	127 -> 88 [color="#0d0e73", label="0.21%\n2×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d0e73", labeldistance="0.50", penwidth="0.50"];
+	133 [color="#0c6f8c", fontcolor="#ffffff", fontsize="10.00", label="ridge_test:12:ridge_test\n19.39%\n(1.06%)\n1×"];
+	133 -> 295 [color="#0d2c7c", label="6.97%\n1×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d2c7c", labeldistance="0.50", penwidth="0.50"];
+	133 -> 335 [color="#0d1a77", label="3.02%\n17×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d1a77", labeldistance="0.50", penwidth="0.50"];
+	133 -> 88 [color="#0d247a", label="5.35%\n1×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d247a", labeldistance="0.50", penwidth="0.50"];
+	133 -> 31 [color="#0d1977", label="2.96%\n1×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d1977", labeldistance="0.50", penwidth="0.50"];
+	162 [color="#0d0f73", fontcolor="#ffffff", fontsize="10.00", label="function_base:1768:corrcoef\n0.56%\n(0.03%)\n30000×"];
+	222 [color="#0d1776", fontcolor="#ffffff", fontsize="10.00", label="~:0:<method 'randn' of 'mtrand.RandomState' objects>\n2.50%\n(2.50%)\n3×"];
+	269 [color="#0d0f74", fontcolor="#ffffff", fontsize="10.00", label="_methods:71:_var\n0.60%\n(0.43%)\n110×"];
+	295 [color="#75ca08", fontcolor="#ffffff", fontsize="10.00", label="~:0:<numpy.core._dotblas.dot>\n64.13%\n(64.13%)\n30113×"];
+	328 [color="#0d0f74", fontcolor="#ffffff", fontsize="10.00", label="~:0:<method 'std' of 'numpy.ndarray' objects>\n0.60%\n(0.00%)\n105×"];
+	328 -> 422 [color="#0d0f74", label="0.60%\n105×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d0f74", labeldistance="0.50", penwidth="0.50"];
+	329 [color="#0d1375", fontcolor="#ffffff", fontsize="10.00", label="ridge_test:8:<lambda>\n1.44%\n(0.75%)\n105×"];
+	329 -> 328 [color="#0d0f74", label="0.60%\n105×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d0f74", labeldistance="0.50", penwidth="0.50"];
+	335 [color="#0d1a77", fontcolor="#ffffff", fontsize="10.00", label="~:0:<reduce>\n3.02%\n(3.02%)\n17×"];
+	422 [color="#0d0f74", fontcolor="#ffffff", fontsize="10.00", label="_methods:115:_std\n0.60%\n(0.03%)\n105×"];
+	422 -> 269 [color="#0d0f73", label="0.57%\n105×", arrowsize="0.35", fontsize="10.00", fontcolor="#0d0f73", labeldistance="0.50", penwidth="0.50"];
+	428 [color="#0d1d78", fontcolor="#ffffff", fontsize="10.00", label="ufunclike:54:isposinf\n3.78%\n(3.78%)\n3×"];
+	540 [color="#0d1174", fontcolor="#ffffff", fontsize="10.00", label="ufunclike:116:isneginf\n1.06%\n(1.06%)\n3×"];
+}

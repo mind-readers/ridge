@@ -19,6 +19,9 @@
 #		then this option should probably be set to 8
 #	time: The time until a task is killed due to timeout 
 
+# This SLURM batch file is for profiling the code. If you simply want to run the
+# code, use batch.sh instead
+
 
 # Weird round-about method of loading modules on 
 # stampede that allows for proper mpi4py usage
@@ -32,4 +35,4 @@ module load python/2.7.6
 
 # use ibrun on stampede in order to use MPI
 # this will need to change when running in GallantLab
-ibrun python test.py  
+ibrun python profile.py ./test.py  
