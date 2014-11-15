@@ -270,16 +270,17 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     size = comm.Get_size()
 
     local_boots = nboots / size
+    remainder = nboots % size
+    if rank < remainder:
+        local_boots += 1
 
     local_Rcmats = []
-#    for bi in counter(range(nboots), countevery=1, total=nboots):
     if test_bootstrap:
         k = rank*local_boots
+        if rank >= remainder:
+            k += remainder
     else:
         k = "None"
-
-    if rank == size-1:
-        local_boots += nboots % size
 
     for i in range(local_boots):
         logger.info("Rank " + str(rank) + " running bootstrap " + str(i+1) +
