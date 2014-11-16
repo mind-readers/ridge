@@ -25,3 +25,9 @@ In the traditional approach, predictions are obtained by multiplying the estimat
 Why does this help? We can figure that out by determining the number of actual multiplications that are done in each case. Let's say that `X` has N features and TR data points, `Y` has M responses and TR data points, and `X_new` and `Y_new` have the same number of features and responses but TP data points. Thus the number of multiplications necessary for the traditional method of finding `Y_new_predicted` is `N^3 + N^2*TR + N*TR*M + TP*N*M`. This cost can be partially offset by caching `U.T * Y`, which reduces the cost by `N*TR*M`. Thus the total cost is about `N^3 + N^2*TR + TP*N*M`.
 
 The number of multiplications necessary for the optimized approach is `TP*N^2 + N^2*TP + N*TR*M + TP*N*M`. This cost can be further offset by caching `X * V` (getting rid of the `TP*N^2`) and `U.T * Y` (getting rid of the `N*TR*M`). Thus the total optimized cost is about `N^2*TP + TP*N*M`. Effectively, this totally gets rid of the `N^3` cost (which can be very large if the number of features is large) and reduces the other cost by a factor of `TP/TR` (TP is usually much smaller than TR).
+
+Dependencies
+========
+- PyCUDA
+- Scikits.cuda
+- Mako

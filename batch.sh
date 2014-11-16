@@ -23,12 +23,14 @@
 # Weird round-about method of loading modules on 
 # stampede that allows for proper mpi4py usage
 # Will probably be different in GallantLab
-module load python/2.7.3-epd-7.3.2   # this is the older one...
-module load mpi4py                   # a second step is needed
-module unload python
+#module load python/2.7.3-epd-7.3.2   # this is the older one...
+#module load mpi4py                   # a second step is needed
+#module unload python
 module load intel/14.0.1.106
 module load python/2.7.6  
-
+module load cuda/6.0
+export PYTHONPATH="/opt/apps/python/epd/7.3.2/modules/lib/python:/opt/apps/python/epd/7.3.2/lib:$HOME/.python/lib/python2.7/site-packages:$HOME/lib64/python2.7/site-packages"
+export OMP_NUM_THREADS=8
 
 # use ibrun on stampede in order to use MPI
 # this will need to change when running in GallantLab

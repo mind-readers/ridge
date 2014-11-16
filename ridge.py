@@ -6,6 +6,12 @@ import random
 import itertools as itools
 from mpi4py import MPI
 
+import pycuda.gpuarray as gpuarray
+import pycuda.autoinit
+import scikits.cuda.linalg as linalg
+import scikits.cuda.misc as misc
+linalg.init()
+
 zs = lambda v: (v-v.mean(0))/v.std(0) ## z-score function
 
 ridge_logger = logging.getLogger("ridge_corr")
