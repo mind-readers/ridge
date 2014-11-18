@@ -45,6 +45,18 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         from text.regression.svd_dgesvd import svd_dgesvd
         U,S,Vh = svd_dgesvd(stim, full_matrices=False)
 
+    # EXAMPLE FOR RUNNING GPU LINALG OPERATIONS
+    # Export data to GPU
+    # U_gpu = gpuarray.to_gpu(U)
+    # Do a transpose op on GPU
+    # UT_gpu = linalg.transpose(U_gpu)
+    # Export more data to GPU
+    # resp_gpu = gpuarray.to_gpu(np.nan_to_num(resp))
+    # Run a dot product
+    # UR_gpu = linalg.dot(UT_gpu, resp_gpu)
+    # Fetch data from the GPU
+    # UR = UR_gpu.get()
+    # The above GPU code can replace the following line:
     UR = np.dot(U.T, np.nan_to_num(resp))
     
     # Expand alpha to a collection if it's just a single value
