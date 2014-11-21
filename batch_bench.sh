@@ -5,7 +5,7 @@
 #
 #SBATCH --ntasks=5
 #SBATCH --cpus-per-task=8
-#SBATCH --time=00:30:00
+#SBATCH --time=01:00:00
 
 # The above configs do the following
 # 	job-name: some human-readable string for a name
@@ -34,4 +34,4 @@ export OMP_NUM_THREADS=8
 
 # use ibrun on stampede in order to use MPI
 # this will need to change when running in GallantLab
-ibrun python test.py  
+ibrun python test.py --benchmark
