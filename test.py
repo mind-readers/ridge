@@ -26,13 +26,26 @@ if arg == "--test-correct":
     N = 200
     M = 3000
     TR = 1000
-    TP = 2000
+    TP = 200
 else:
     # N and M are 1/2 of what is used in practice
     N = 15000 # features
     M = 30000 # response sources (voxels, whatever)
     TR = 5000 # regression timepoints
     TP = 1000 # prediction timepoints
+
+# Benchmark sizes:
+# Fixed values
+# M = always 30,000
+# Varying values
+# N = 30000, 15000, 7500, 4000, 2000, 1000, 500
+# TR = 7000, 6000, 5000, 4000, 3000, 2000, 1000
+
+# Reasonable realistic values:
+# N  = 30000
+# M  = 60000
+# TR = 5000
+# TP = 1000
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
