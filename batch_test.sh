@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#SBATCH --job-name=mpi-test
-#SBATCH --output=mpi-test.log
+#SBATCH --job-name=ridge-test
+#SBATCH --output=output.log
 #
 #SBATCH --ntasks=5
 #SBATCH --cpus-per-task=8

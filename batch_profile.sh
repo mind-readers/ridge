@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-#SBATCH --job-name=mpi-test
-#SBATCH --output=profile.log
+#SBATCH --job-name=ridge-profile
+#SBATCH --output=output.log
 #
 #SBATCH --ntasks=5
 #SBATCH --cpus-per-task=8
-#SBATCH --time=00:30:00
+#SBATCH --time=01:00:00
 
 # The above configs do the following
 # 	job-name: some human-readable string for a name
@@ -28,9 +28,9 @@
 # Will probably be different in GallantLab
 #module load python/2.7.3-epd-7.3.2   # this is the older one...
 #module load mpi4py                   # a second step is needed
-module unload python
 module load intel/14.0.1.106
 module load python/2.7.6  
+module load cuda/6.0
 export PYTHONPATH="/opt/apps/python/epd/7.3.2/modules/lib/python:/opt/apps/python/epd/7.3.2/lib:$HOME/.python/lib/python2.7/site-packages:$HOME/lib64/python2.7/site-packages"
 export OMP_NUM_THREADS=8
 # use ibrun on stampede in order to use MPI
