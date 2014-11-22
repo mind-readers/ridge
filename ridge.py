@@ -39,7 +39,8 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         Linear regression weights.
     """
     try:
-        #  TODO determine if this should be a GPU op
+        # TODO determine if this should be a GPU op
+        # stim is TRxN (~1000x200 or 5000x15000)
         U,S,Vh = np.linalg.svd(stim, full_matrices=False)
     except np.linalg.LinAlgError, e:
         logger.info("NORMAL SVD FAILED, trying more robust dgesvd..")
@@ -58,7 +59,10 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
     # Fetch data from the GPU
     # UR = UR_gpu.get()
     # The above GPU code can replace the following line:
-    UR = np.dot(U.T, np.nan_to_num(resp)) #  TODO determine if this should be a GPU op
+    UR = np.dot(U.T, np.nan_to_num(resp)) 
+    # TODO determine if this should be a GPU op
+    # U is output from SVD, I think TRxTR (~1000x1000 or 5000x5000)
+    # resp is TRxM (~1000x3000 or 5000x30000)
     
     # Expand alpha to a collection if it's just a single value
     if isinstance(alpha, float):
@@ -76,7 +80,10 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
     wt = np.zeros((stim.shape[1], resp.shape[1]))
     for ua in ualphas:
         selvox = np.nonzero(nalphas==ua)[0]
-        awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]]) #  TODO determine if this should be a GPU op
+        # TODO determine if this should be a GPU op
+        # Vh is output from SVD, i think NxN (~200x200 or 15000x15000)
+        # TODO determine how reduce works
+        awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
         wt[:,selvox] = awt
 
     return wt
@@ -141,7 +148,7 @@ def ridge_corr(Rstim, Pstim, Rresp, Presp, alphas, normalpha=False, corrmin=0.2,
 
     ## Truncate tiny singular values for speed
     origsize = S.shape[0]
-    ngoodS = np.sum(S>singcutoff) # TODO determine if this should be a GPU op
+    ngoodS = np.sum(S>singcutoff)
     nbad = origsize-ngoodS
     U = U[:,:ngoodS]
     S = S[:ngoodS]
@@ -157,9 +164,13 @@ def ridge_corr(Rstim, Pstim, Rresp, Presp, alphas, normalpha=False, corrmin=0.2,
         nalphas = alphas
 
     ## Precompute some products for speed
-    #  TODO determine if this should be a GPU op
+    # TODO determine if this should be a GPU 
+    # U is svd output. I think TRxTR (~1000x1000 or 5000x5000)
+    # Rresp is TRxM (~1000x3000 or 5000x30000)
     UR = np.dot(U.T, Rresp) ## Precompute this matrix product for speed
-    #  TODO determine if this should be a GPU op
+    # TODO determine if this should be a GPU op
+    # Pstim is TPxN (~200x200 or 1000x15000)
+    # Vh is output from SVD, I think NxN (~200x200 or 15000x15000)
     PVh = np.dot(Pstim, Vh.T) ## Precompute this matrix product for speed
     
     #Prespnorms = np.apply_along_axis(np.linalg.norm, 0, Presp) ## Precompute test response norms
@@ -167,11 +178,12 @@ def ridge_corr(Rstim, Pstim, Rresp, Presp, alphas, normalpha=False, corrmin=0.2,
     Prespvar = Presp.var(0)
     Rcorrs = [] ## Holds training correlations for each alpha
     for na, a in zip(nalphas, alphas):
-        #  TODO determine if this should be a GPU op
         #D = np.diag(S/(S**2+a**2)) ## Reweight singular vectors by the ridge parameter 
         D = S/(S**2+na**2) ## Reweight singular vectors by the (normalized?) ridge parameter
         
-        #  TODO determine if this should be a GPU op
+        # TODO determine if this should be a GPU op
+        # mult_diag is diagonal matrix. 
+        # UR is TRxM (~1000x3000 or 5000x30000)
         pred = np.dot(mult_diag(D, PVh, left=False), UR) ## Best (1.75 seconds to prediction in test)
         # pred = np.dot(mult_diag(D, np.dot(Pstim, Vh.T), left=False), UR) ## Better (2.0 seconds to prediction in test)
         
@@ -190,7 +202,6 @@ def ridge_corr(Rstim, Pstim, Rresp, Presp, alphas, normalpha=False, corrmin=0.2,
         else:
             ## Compute variance explained
             resvar = (Presp-pred).var(0)
-            #  TODO determine if this should be a GPU op
             Rcorr = np.clip(1-(resvar/Prespvar), 0, 1)
             
         Rcorr[np.isnan(Rcorr)] = 0
@@ -404,6 +415,6 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     # Find prediction correlations
     nnpred = np.nan_to_num(pred)
     corrs = np.nan_to_num(np.array([np.corrcoef(Presp[:,ii], nnpred[:,ii].ravel())[0,1]
-                                    for ii in range(Presp.shape[1])])) # TODO determine if this should be a GPU op
+                                    for ii in range(Presp.shape[1])]))
 
     return wt, corrs, valphas, allRcorrs, valinds
