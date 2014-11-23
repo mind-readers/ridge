@@ -298,71 +298,65 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     """
     nresp, nvox = Rresp.shape
     bestalphas = np.zeros((nboots, nvox))  # Will hold the best alphas for each voxel
-    local_valinds = [] # Will hold the indices into the validation data for each bootstrap
 
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    local_boots = nboots / size
-    remainder = nboots % size
-    if rank < remainder:
-        local_boots += 1
-
-    local_Rcmats = []
+    local_boots = nboots / size + 1
     if test_bootstrap:
-        k = rank*local_boots
-        if rank >= remainder:
-            k += remainder
+        k = rank
     else:
-        k = "None"
+        k = None
 
-    for i in range(local_boots):
-        logger.info("Rank " + str(rank) + " running bootstrap " + str(i+1) +
-                "/"+ str(local_boots) + " with seed " + str(k))
-        if test_bootstrap:
-            random.seed(k)
-        logger.info("Selecting held-out test set..")
-        allinds = range(nresp)
-        indchunks = zip(*[iter(allinds)]*chunklen)
-        random.shuffle(indchunks)
-        logger.info(str(indchunks[0:3]))
-        heldinds = list(itools.chain(*indchunks[:nchunks]))
-        notheldinds = list(set(allinds)-set(heldinds))
-        local_valinds.append(heldinds)
-        
-        RRstim = Rstim[notheldinds,:]
-        PRstim = Rstim[heldinds,:]
-        RRresp = Rresp[notheldinds,:]
-        PRresp = Rresp[heldinds,:]
-        
-        # Run ridge regression using this test set
-        Rcmat = ridge_corr(RRstim, PRstim, RRresp, PRresp, alphas,
-                           corrmin=corrmin, singcutoff=singcutoff,
-                           normalpha=normalpha, use_corr=use_corr,
-                           logger=logger)
-        
-        local_Rcmats.append(Rcmat)
-        #print("RANK: " + str(rank) + str(locals()))
-        #Rcmats.append(Rcmat)
-        if test_bootstrap:
-            k += 1
-
-    global_Rcmats = comm.allgather(local_Rcmats)
-    comm.barrier()
-    global_valinds = comm.allgather(local_valinds)
-    comm.barrier()
     Rcmats = []
-    valinds = []
-    for local_bootstrap_result in global_Rcmats:
-        Rcmats += local_bootstrap_result
-    for local_valinds_result in global_valinds:
-        valinds += local_valinds_result
+    valinds = [] # Will hold the indices into the validation data for each bootstrap
+    for i in range(local_boots):
+        if k < nboots:
+            logger.info("Rank " + str(rank) + " running bootstrap " + str(i+1) +
+                    "/"+ str(local_boots) + " with seed " + str(k))
+            if test_bootstrap:
+                random.seed(k)
+            logger.info("Selecting held-out test set..")
+            allinds = range(nresp)
+            indchunks = zip(*[iter(allinds)]*chunklen)
+            random.shuffle(indchunks)
+            logger.info(str(indchunks[0:3]))
+            heldinds = list(itools.chain(*indchunks[:nchunks]))
+            notheldinds = list(set(allinds)-set(heldinds))
+            
+            RRstim = Rstim[notheldinds,:]
+            PRstim = Rstim[heldinds,:]
+            RRresp = Rresp[notheldinds,:]
+            PRresp = Rresp[heldinds,:]
+            
+            # Run ridge regression using this test set
+            Rcmat = ridge_corr(RRstim, PRstim, RRresp, PRresp, alphas,
+                               corrmin=corrmin, singcutoff=singcutoff,
+                               normalpha=normalpha, use_corr=use_corr,
+                               logger=logger)
+        else:
+            Rcmat = None
+            heldinds = None
+            
+        Rcmats += comm.allgather(Rcmat)
+        valinds += comm.allgather(heldinds)
+
+        if test_bootstrap:
+            k += size
+
+
+#    for local_bootstrap_result in global_Rcmats:
+#        Rcmats += local_bootstrap_result
+#    for local_valinds_result in global_valinds:
+#        valinds += local_valinds_result
+    valinds = [ x for x in valinds if x != None ]
     valinds = np.array(valinds)
 
     
     # Find best alphas
     if nboots>0:
+        Rcmats = [ x for x in Rcmats if x != None ]
         allRcorrs = np.dstack(Rcmats)
     else:
         allRcorrs = None

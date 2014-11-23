@@ -29,17 +29,18 @@ if arg == "--test-correct":
     TP = 200
 else:
     # N and M are 1/2 of what is used in practice
-    N = 15000 # features
-    M = 30000 # response sources (voxels, whatever)
-    TR = 5000 # regression timepoints
-    TP = 1000 # prediction timepoints
+    N = 500 # features
+    M = 60000 # response sources (voxels, whatever)
+    TR = 1000 # regression timepoints
+    TP = 200 # prediction timepoints
 
 # Benchmark sizes:
 # Fixed values
 # M = always 30,000
+# TR = always 1000
+# TP = always 200
 # Varying values
 # N = 30000, 15000, 7500, 4000, 2000, 1000, 500
-# TR = 7000, 6000, 5000, 4000, 3000, 2000, 1000
 
 # Reasonable realistic values:
 # N  = 30000

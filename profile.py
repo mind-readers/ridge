@@ -5,7 +5,7 @@ args = []
 
 n = sys.argv[1].split('.')[1]
 n = n.split('/')[1]
-args.append('python')
+args.append('python-mpi')
 args.append('-m')
 args.append('cProfile')
 args.append('-o')
