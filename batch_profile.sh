@@ -36,4 +36,4 @@ export PATH="$PATH:/opt/apps/intel14/mvapich2_2_0/python/2.7.6/lib/python2.7/sit
 export OMP_NUM_THREADS=8
 # use ibrun on stampede in order to use MPI
 # this will need to change when running in GallantLab
-ibrun python-mpi -m cProfile -o test.pstats ./test.py --benchmark 
+ibrun python -m cProfile -o test.pstats ./test.py --benchmark 
