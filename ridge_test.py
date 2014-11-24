@@ -35,7 +35,7 @@ def ridge_test(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         U,S,Vh = np.linalg.svd(stim, full_matrices=False)
     except np.linalg.LinAlgError, e:
         logger.info("NORMAL SVD FAILED, trying more robust dgesvd..")
-        from text.regression.svd_dgesvd import svd_dgesvd
+        from svd_dgesvd import svd_dgesvd
         U,S,Vh = svd_dgesvd(stim, full_matrices=False)
 
     UR = np.dot(U.T, np.nan_to_num(resp))
@@ -116,7 +116,7 @@ def ridge_corr_test(Rstim, Pstim, Rresp, Presp, alphas, normalpha=False, corrmin
         U,S,Vh = np.linalg.svd(Rstim, full_matrices=False)
     except np.linalg.LinAlgError, e:
         logger.info("NORMAL SVD FAILED, trying more robust dgesvd..")
-        from text.regression.svd_dgesvd import svd_dgesvd
+        from svd_dgesvd import svd_dgesvd
         U,S,Vh = svd_dgesvd(Rstim, full_matrices=False)
 
     ## Truncate tiny singular values for speed

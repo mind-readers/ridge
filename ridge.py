@@ -44,7 +44,7 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         U,S,Vh = np.linalg.svd(stim, full_matrices=False)
     except np.linalg.LinAlgError, e:
         logger.info("NORMAL SVD FAILED, trying more robust dgesvd..")
-        from text.regression.svd_dgesvd import svd_dgesvd
+        from svd_dgesvd import svd_dgesvd
         U,S,Vh = svd_dgesvd(stim, full_matrices=False)
 
     # EXAMPLE FOR RUNNING GPU LINALG OPERATIONS
@@ -143,7 +143,7 @@ def ridge_corr(Rstim, Pstim, Rresp, Presp, alphas, normalpha=False, corrmin=0.2,
         U,S,Vh = np.linalg.svd(Rstim, full_matrices=False)
     except np.linalg.LinAlgError, e:
         logger.info("NORMAL SVD FAILED, trying more robust dgesvd..")
-        from text.regression.svd_dgesvd import svd_dgesvd
+        from svd_dgesvd import svd_dgesvd
         U,S,Vh = svd_dgesvd(Rstim, full_matrices=False)
 
     ## Truncate tiny singular values for speed
@@ -303,7 +303,12 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    local_boots = nboots / size + 1
+    # Keep it super simple by enforcing that the num of
+    # bootstraps be divisible by the number of workers;
+    # else, the number of bootstraps will be truncated
+    local_boots = nboots / size
+    if (nboots/size)*size != nboots:
+        logger.info("Number of workers do not cleanly divide requested bootstrap count. Doing %d bootstraps total instead" % (local_boots*size,))
     if test_bootstrap:
         k = rank
     else:
@@ -339,8 +344,16 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
             Rcmat = None
             heldinds = None
             
-        Rcmats += comm.allgather(Rcmat)
+        Rcmat = np.array(Rcmat)
+        # Allocate an empty numpy array to hold MPI collected data
+        recv_Rcmats = np.empty((size*len(alphas), nvox), dtype=np.float64)
+        comm.barrier()
+        comm.Allgather(Rcmat, recv_Rcmats)
+        # Split recv'd data into 'size' separate arrays (from each worker)
+        Rcmats += np.split(recv_Rcmats, size)
+        comm.barrier()
         valinds += comm.allgather(heldinds)
+        comm.barrier()
 
         if test_bootstrap:
             k += size
