@@ -77,15 +77,14 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
 
     # Compute weights for each alpha
     ualphas = np.unique(nalphas)
-    wt = np.zeros((stim.shape[1], resp.shape[1]))
+    wt = np.zeros((stim.shape[1], resp.shape[1]), order='F') # Make wt column major
     for ua in ualphas:
-        selvox = np.nonzero(nalphas==ua)[0]
+        selvox = np.nonzero(nalphas==ua)[0] # list of indices equal to ua
         # TODO determine if this should be a GPU op
         # Vh is output from SVD, i think NxN (~200x200 or 15000x15000)
         # TODO determine how reduce works
         awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
         wt[:,selvox] = awt
-
     return wt
     
 
