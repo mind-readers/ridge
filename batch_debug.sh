@@ -3,7 +3,7 @@
 #SBATCH --job-name=ridge-debug
 #SBATCH --output=debug_output.log
 #
-#SBATCH --ntasks=1
+#SBATCH --ntasks=5
 #SBATCH --cpus-per-task=8
 #SBATCH --time=01:00:00
 
@@ -30,9 +30,8 @@ module load intel/14.0.1.106
 module load python/2.7.6  
 module load cuda/6.0
 export PYTHONPATH="/opt/apps/python/epd/7.3.2/modules/lib/python:/opt/apps/python/epd/7.3.2/lib:$HOME/.python/lib/python2.7/site-packages:$HOME/lib64/python2.7/site-packages"
-export PATH="$PATH:/opt/apps/intel14/mvapich2_2_0/python/2.7.6/lib/python2.7/site-packages/mpi4py/bin/"
 export OMP_NUM_THREADS=8
 
 # use ibrun on stampede in order to use MPI
 # this will need to change when running in GallantLab
-ibrun python-mpi test.py --test-correct 
+ibrun python test.py --test-correct 

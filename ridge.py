@@ -75,16 +75,74 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
     else:
         nalphas = alpha
 
-    # Compute weights for each alpha
+    # Use MPI to compute most of the columns of wt
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    print("Starting weight computation with %d workers and %d alphas" % (size, len(nalphas)))
+    print("Num unique alphas: %d" % (len(np.unique(nalphas)),))
+
     ualphas = np.unique(nalphas)
     wt = np.zeros((stim.shape[1], resp.shape[1]), order='F') # Make wt column major
-    for ua in ualphas:
-        selvox = np.nonzero(nalphas==ua)[0] # list of indices equal to ua
-        # TODO determine if this should be a GPU op
-        # Vh is output from SVD, i think NxN (~200x200 or 15000x15000)
-        # TODO determine how reduce works
+    all_selvox = [np.nonzero(nalphas==ualphas[i])[0] for i in range(len(ualphas))]
+    num_mpi_rounds = len(ualphas) / size
+    remainder_rounds = len(ualphas) % size
+    ualphas_rem = num_mpi_rounds*size
+
+    print("DEBUG: SIZE " + str(size) + " RANK " + str(rank) + " \nROUNDS " + str(num_mpi_rounds) + " REMAIN " + str(remainder_rounds) + " ualphaREM " + str(ualphas_rem))
+
+    for c in range(num_mpi_rounds):
+        ua = ualphas[c*size+rank]
+        selvox = all_selvox[c*size+rank] # list of indices equal to ua
+        #print("DEBUG: selvox: " + str(selvox))
         awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
-        wt[:,selvox] = awt
+        padded_awt = np.empty((wt.shape[0], wt.shape[1]), dtype=np.float64)
+        padded_awt[:,selvox] = awt
+        recv_awt = np.empty((wt.shape[0]*size, wt.shape[1]), dtype=np.float64)
+        comm.Allgather(padded_awt, recv_awt)
+        print("DEBUG1: awt " + str(awt.shape) + " recv_awt " + str(len(recv_awt)) + ", " + str(len(recv_awt[0])) + " wt " + str(wt.shape))
+        recv_awt = np.vsplit(recv_awt, size)
+        #print("DEBUG1: selvox " + str(selvox) + " awt.shape " + str(awt.shape))
+        #print("DEBUG1: awt " + str(awt.shape) + " recv_awt " + str(recv_awt.shape) + " wt (" + str(len(wt)) + ", " + str(len(wt[0])) + ")")
+        for i in range(size):
+            #print("DEBUG: rank" + str(rank) + " c" + str(c) + " i" + str(i) + " all_selvox " + str(all_selvox[c*size+i]) + " recv_awt " + str(recv_awt[i]))
+            wt[:,all_selvox[c*size+i]] = recv_awt[i][:,all_selvox[c*size+i]]
+
+    # Each node needs to compute the tail independently
+    #for rem in range(remainder_rounds):
+    if rank < remainder_rounds:
+        ua = ualphas[num_mpi_rounds*size+rank]
+        selvox = all_selvox[(num_mpi_rounds*size)+rank] # list of indices equal to ua
+        awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
+        padded_awt = np.empty((wt.shape[0], wt.shape[1]), dtype=np.float64)
+        padded_awt[:,selvox] = awt
+    else:
+        # this is just pointless activity to create an array of the proper size
+        ua = ualphas[0]
+        selvox = all_selvox[0] # list of indices equal to ua
+        awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
+        padded_awt = np.empty((wt.shape[0], wt.shape[1]), dtype=np.float64)
+        padded_awt[:,selvox] = awt
+    recv_awt = np.empty((wt.shape[0]*size, wt.shape[1]), dtype=np.float64)
+    comm.Allgather(padded_awt, recv_awt)
+    print("DEBUG1: awt " + str(awt.shape) + " recv_awt " + str(len(recv_awt)) + ", " + str(len(recv_awt[0])) + " wt " + str(wt.shape))
+    recv_awt = np.vsplit(recv_awt, size)
+    for i in range(size):
+        if i < remainder_rounds:
+            wt[:,all_selvox[ualphas_rem+i]] = recv_awt[i][:,all_selvox[ualphas_rem+i]]
+
+
+    ## Compute weights for each alpha
+    #ualphas = np.unique(nalphas)
+    #wt = np.zeros((stim.shape[1], resp.shape[1]), order='F') # Make wt column major
+    #for ua in ualphas:
+    #    selvox = np.nonzero(nalphas==ua)[0] # list of indices equal to ua
+    #    # TODO determine if this should be a GPU op
+    #    # Vh is output from SVD, i think NxN (~200x200 or 15000x15000)
+    #    # TODO determine how reduce works
+    #    awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
+    #    wt[:,selvox] = awt
     return wt
     
 
