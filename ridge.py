@@ -116,12 +116,12 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
     # Similar operations to before
     maxlen_selvox = None
     for sx in range(remainder_rounds):
-        len_selvox = all_selvox[c*size+sx].shape[0]
+        len_selvox = all_selvox[ualphas_rem+sx].shape[0]
         if maxlen_selvox is None or len_selvox > maxlen_selvox:
             maxlen_selvox = len_selvox
     if rank < remainder_rounds:
-        ua = ualphas[num_mpi_rounds*size+rank]
-        selvox = all_selvox[(num_mpi_rounds*size)+rank] # list of indices equal to ua
+        ua = ualphas[ualphas_rem+rank]
+        selvox = all_selvox[ualphas_rem+rank] # list of indices equal to ua
         awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
         padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
         padded_awt[:,:selvox.shape[0]] = awt
@@ -474,6 +474,21 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     # Find weights
     logger.info("Computing weights for each response using entire training set..")
     wt = ridge(Rstim, Rresp, valphas, singcutoff=singcutoff, normalpha=normalpha)
+    #logger.info("Finished computing results of ridge()...")
+    #if rank == 0:
+        #logger.info("Computing weights for each response using entire training set..")
+        #wt = ridge(Rstim, Rresp, valphas, singcutoff=singcutoff, normalpha=normalpha)
+        #for nd in range(1, size):
+            #comm.Isend(wt, dest=nd)
+        #logger.info("Broadcasting results of ridge()...")
+    #else:
+        #logger.info("Not Computing weights..")
+        #wt = np.empty((Rstim.shape[1], Rresp.shape[1]), order='F')
+        #logger.info(str(rank) + " Ready to recieve results of ridge()...")
+        #comm.Recv(wt, source=0)
+        #logger.info(str(rank) + " Recieved results of ridge()...")
+    #comm.barrier()
+    #wt = comm.Bcast(wt, root=0)
 
     # Predict responses on prediction set
     logger.info("Predicting responses for predictions set..")
