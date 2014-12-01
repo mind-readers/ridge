@@ -85,14 +85,16 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
 
     ualphas = np.unique(nalphas)
     wt = np.zeros((stim.shape[1], resp.shape[1]), order='F') # Make wt column major
+    # Precompute all selvox values so each mpi job can operate on them independently
     all_selvox = [np.nonzero(nalphas==ualphas[i])[0] for i in range(len(ualphas))]
     num_mpi_rounds = len(ualphas) / size
     remainder_rounds = len(ualphas) % size
     ualphas_rem = num_mpi_rounds*size
 
-    print("DEBUG: SIZE " + str(size) + " RANK " + str(rank) + " \nROUNDS " + str(num_mpi_rounds) + " REMAIN " + str(remainder_rounds) + " ualphaREM " + str(ualphas_rem))
-
     for c in range(num_mpi_rounds):
+        # The length of the selvox is how many columns awt will have.
+        # We want to find the max length of all selvox in this round so that mpi
+        # can pass a consistent array size
         maxlen_selvox = None
         for sx in range(size):
             len_selvox = all_selvox[c*size+sx].shape[0]
@@ -102,6 +104,7 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         selvox = all_selvox[c*size+rank] # list of indices equal to ua
         awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
         padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
+        # Stick the awt inside padded_awt aligned from the top left corner
         padded_awt[:,:selvox.shape[0]] = awt
         recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
         comm.Allgather(padded_awt, recv_awt)
@@ -109,6 +112,8 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         for i in range(size):
             wt[:,all_selvox[c*size+i]] = recv_awt[i][:,:all_selvox[c*size+i].shape[0]]
 
+    # Compute the remainder rounds that don't divide evenly into the mpi size
+    # Similar operations to before
     maxlen_selvox = None
     for sx in range(remainder_rounds):
         len_selvox = all_selvox[c*size+sx].shape[0]
@@ -121,13 +126,13 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
         padded_awt[:,:selvox.shape[0]] = awt
     else:
-        # this is just pointless activity to create an array of the proper size
+        # this is just to create an array of the proper size to appease mpi
         padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
     recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
     comm.Allgather(padded_awt, recv_awt)
     recv_awt = np.vsplit(recv_awt, size)
     for i in range(size):
-        if i < remainder_rounds:
+        if i < remainder_rounds: # This is to pick out the real arrays
             wt[:,all_selvox[ualphas_rem+i]] = recv_awt[i][:,:all_selvox[ualphas_rem+i].shape[0]]
 
 
