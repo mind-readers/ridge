@@ -100,24 +100,15 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
                 maxlen_selvox = len_selvox
         ua = ualphas[c*size+rank]
         selvox = all_selvox[c*size+rank] # list of indices equal to ua
-        #print("DEBUG: selvox: " + str(selvox))
         awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
-        #padded_awt = np.empty((wt.shape[0], wt.shape[1]), dtype=np.float64)
         padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
-        #padded_awt[:,selvox] = awt
         padded_awt[:,:selvox.shape[0]] = awt
         recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
         comm.Allgather(padded_awt, recv_awt)
-        print("DEBUG1: awt " + str(awt.shape) + " recv_awt " + str(len(recv_awt)) + ", " + str(len(recv_awt[0])) + " wt " + str(wt.shape))
         recv_awt = np.vsplit(recv_awt, size)
-        #print("DEBUG1: selvox " + str(selvox) + " awt.shape " + str(awt.shape))
-        #print("DEBUG1: awt " + str(awt.shape) + " recv_awt " + str(recv_awt.shape) + " wt (" + str(len(wt)) + ", " + str(len(wt[0])) + ")")
         for i in range(size):
-            #print("DEBUG: rank" + str(rank) + " c" + str(c) + " i" + str(i) + " all_selvox " + str(all_selvox[c*size+i]) + " recv_awt " + str(recv_awt[i]))
             wt[:,all_selvox[c*size+i]] = recv_awt[i][:,:all_selvox[c*size+i].shape[0]]
 
-    # Each node needs to compute the tail independently
-    #for rem in range(remainder_rounds):
     maxlen_selvox = None
     for sx in range(remainder_rounds):
         len_selvox = all_selvox[c*size+sx].shape[0]
@@ -131,14 +122,9 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         padded_awt[:,:selvox.shape[0]] = awt
     else:
         # this is just pointless activity to create an array of the proper size
-        #ua = ualphas[0]
-        #selvox = all_selvox[0] # list of indices equal to ua
-        #awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
         padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
-        #padded_awt[:,selvox] = awt
     recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
     comm.Allgather(padded_awt, recv_awt)
-    print("DEBUG1: awt " + str(awt.shape) + " recv_awt " + str(len(recv_awt)) + ", " + str(len(recv_awt[0])) + " wt " + str(wt.shape))
     recv_awt = np.vsplit(recv_awt, size)
     for i in range(size):
         if i < remainder_rounds:
