@@ -116,28 +116,35 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
 
     # Compute the remainder rounds that don't divide evenly into the mpi size
     # Similar operations to before
-    maxlen_selvox = None
-    for sx in range(remainder_rounds):
-        len_selvox = all_selvox[ualphas_rem+sx].shape[0]
-        if maxlen_selvox is None or len_selvox > maxlen_selvox:
-            maxlen_selvox = len_selvox
-    if rank < remainder_rounds:
-        ua = ualphas[ualphas_rem+rank]
-        selvox = all_selvox[ualphas_rem+rank] # list of indices equal to ua
-        awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
-        padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
-        padded_awt[:,:selvox.shape[0]] = awt
-    else:
-        # this is just to create an array of the proper size to appease mpi
-        padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
-    recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
-    comm.Barrier()
-    comm.Allgather(padded_awt, recv_awt)
-    #comm.Barrier()
-    recv_awt = np.vsplit(recv_awt, size)
-    for i in range(size):
-        if i < remainder_rounds: # This is to pick out the real arrays
-            wt[:,all_selvox[ualphas_rem+i]] = recv_awt[i][:,:all_selvox[ualphas_rem+i].shape[0]]
+    if remainder_rounds > 0:
+        #maxlen_selvox = 0 # Has to be an int in the case that there are no remainder rounds
+        maxlen_selvox = None
+        #print("DEBUG: going into max_selvox computation loop here is remainder_rounds " + str(remainder_rounds))
+        #print("DEBUG: num_mpi_rounds " + str(num_mpi_rounds) + " size " + str(size) + " len ualpha " + str(len(ualphas)))
+        for sx in range(remainder_rounds):
+            len_selvox = all_selvox[ualphas_rem+sx].shape[0]
+            #print("DEBUG: here is len_selvox " + str(len_selvox))
+            if maxlen_selvox is None or len_selvox > maxlen_selvox:
+                #print("DEBUG: maxlen_selvox is replaced by len_selvox " + str(len_selvox))
+                maxlen_selvox = len_selvox
+        #print("DEBUG: maxlen_selvox " + str(maxlen_selvox))
+        if rank < remainder_rounds:
+            ua = ualphas[ualphas_rem+rank]
+            selvox = all_selvox[ualphas_rem+rank] # list of indices equal to ua
+            awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
+            padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
+            padded_awt[:,:selvox.shape[0]] = awt
+        else:
+            # this is just to create an array of the proper size to appease mpi
+            padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
+        recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
+        comm.Barrier()
+        comm.Allgather(padded_awt, recv_awt)
+        #comm.Barrier()
+        recv_awt = np.vsplit(recv_awt, size)
+        for i in range(size):
+            if i < remainder_rounds: # This is to pick out the real arrays
+                wt[:,all_selvox[ualphas_rem+i]] = recv_awt[i][:,:all_selvox[ualphas_rem+i].shape[0]]
 
 
     ## Compute weights for each alpha
