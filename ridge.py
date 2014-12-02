@@ -107,7 +107,9 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         # Stick the awt inside padded_awt aligned from the top left corner
         padded_awt[:,:selvox.shape[0]] = awt
         recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
+        comm.Barrier()
         comm.Allgather(padded_awt, recv_awt)
+        #comm.Barrier()
         recv_awt = np.vsplit(recv_awt, size)
         for i in range(size):
             wt[:,all_selvox[c*size+i]] = recv_awt[i][:,:all_selvox[c*size+i].shape[0]]
@@ -129,7 +131,9 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         # this is just to create an array of the proper size to appease mpi
         padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
     recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
+    comm.Barrier()
     comm.Allgather(padded_awt, recv_awt)
+    #comm.Barrier()
     recv_awt = np.vsplit(recv_awt, size)
     for i in range(size):
         if i < remainder_rounds: # This is to pick out the real arrays
@@ -474,6 +478,7 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
     # Find weights
     logger.info("Computing weights for each response using entire training set..")
     wt = ridge(Rstim, Rresp, valphas, singcutoff=singcutoff, normalpha=normalpha)
+    #comm.Barrier()
     #logger.info("Finished computing results of ridge()...")
     #if rank == 0:
         #logger.info("Computing weights for each response using entire training set..")

@@ -23,8 +23,12 @@ else:
 #   N=2000, M=30000, TR=10000, TP=2000
 # Use small data size for testing correctness
 if arg == "--test-correct":
-    N = 200
-    M = 3000
+    #N = 200
+    #M = 3000
+    #TR = 1000
+    #TP = 200
+    N = 4000
+    M = 10000
     TR = 1000
     TP = 200
 else:
@@ -95,25 +99,26 @@ if arg == "--test-correct":
     print("Comparing answers between optimized ridge and original ridge")
     
     if not np.allclose(wt, wt_test):
-        print("Fail in wt")
+        print("Rank " + str(rank) + ": Fail in wt")
         exit(1)
     
     if not np.allclose(corr, corr_test):
-        print("Fail in corr")
+        print("Rank " + str(rank) + ": Fail in corr")
         exit(1)
     
     if not np.allclose(valphas, valphas_test):
-        print("Fail in valphas")
+        print("Rank " + str(rank) + ": Fail in valphas")
         exit(1)
     
     if not np.allclose(bscorrs, bscorrs_test):
-        print("Fail in bscorrs")
+        print("Rank " + str(rank) + ": Fail in bscorrs")
         exit(1)
     
     if not np.allclose(valinds, valinds_test):
-        print("Fail valinds")
+        print("Rank " + str(rank) + ": Fail valinds")
         exit(1)
     
+    print("Rank " + str(rank) + ": All Tests Passed")
 
 
 # Below is some legacy test code we keep around for easy/quick reference

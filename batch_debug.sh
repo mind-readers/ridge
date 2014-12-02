@@ -5,7 +5,7 @@
 #
 #SBATCH --ntasks=5
 #SBATCH --cpus-per-task=8
-#SBATCH --time=01:00:00
+#SBATCH --time=05:00:00
 
 # The above configs do the following
 # 	job-name: some human-readable string for a name
