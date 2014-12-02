@@ -27,8 +27,8 @@ if arg == "--test-correct":
     #M = 3000
     #TR = 1000
     #TP = 200
-    N = 1800
-    M = 10000
+    N = 1900 # For some reason mpi in ridge() will break if this goes to 2000. Coincidence? I think not!
+    M = 60000
     TR = 1000
     TP = 200
 else:
