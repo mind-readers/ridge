@@ -95,10 +95,10 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         # The length of the selvox is how many columns awt will have.
         # We want to find the max length of all selvox in this round so that mpi
         # can pass a consistent array size
-        maxlen_selvox = None
+        maxlen_selvox = 0
         for sx in range(size):
             len_selvox = all_selvox[c*size+sx].shape[0]
-            if maxlen_selvox is None or len_selvox > maxlen_selvox:
+            if len_selvox > maxlen_selvox:
                 maxlen_selvox = len_selvox
         ua = ualphas[c*size+rank]
         selvox = all_selvox[c*size+rank] # list of indices equal to ua
