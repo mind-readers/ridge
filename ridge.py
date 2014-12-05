@@ -79,7 +79,8 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
-    MAX_MPI_SIZE = 600000 # Assuming mpi breaks after a certain size
+    # Assuming mpi breaks after 2GB. Assuming each element is 8 bytes.
+    MAX_MPI_SIZE = 250000000
 
     print("Starting weight computation with %d workers and %d alphas" % (size, len(nalphas)))
     print("Num unique alphas: %d" % (len(np.unique(nalphas)),))
@@ -103,11 +104,11 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
                 maxlen_selvox = len_selvox
         ua = ualphas[c*size+rank]
         selvox = all_selvox[c*size+rank] # list of indices equal to ua
-        awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
+        #awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
         padded_awt = np.zeros((wt.shape[0], maxlen_selvox), order='F')
         # Stick the awt inside padded_awt aligned from the top left corner
-        padded_awt[:,:selvox.shape[0]] = awt
-        recv_awt = np.empty((wt.shape[0], maxlen_selvox*size), order='F')
+        padded_awt[:,:selvox.shape[0]] = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
+        #recv_awt = np.empty((wt.shape[0], maxlen_selvox*size), order='F')
         for k in range(padded_awt.shape[1]):
             # Gather a column from each worker
             recv_awt = np.empty((wt.shape[0], size), order='F')
@@ -145,11 +146,6 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
                 # If this unique alpha has a kth entry, then fill in the column
                 if i < remainder_rounds and len(all_selvox[ualphas_rem+i]) > k:
                     wt[:,all_selvox[ualphas_rem+i][k]] = recv_awt[:,i]
-        #comm.Allgather(padded_awt, recv_awt)
-        #recv_awt = np.hsplit(recv_awt, size)
-        #for i in range(size):
-            #if i < remainder_rounds: # This is to pick out the real arrays
-                #wt[:,all_selvox[ualphas_rem+i]] = recv_awt[i][:,:all_selvox[ualphas_rem+i].shape[0]]
 
 
     ## Compute weights for each alpha

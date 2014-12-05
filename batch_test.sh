@@ -3,7 +3,7 @@
 #SBATCH --job-name=ridge-test
 #SBATCH --output=output.log
 #
-#SBATCH --ntasks=5
+#SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --time=01:00:00
 

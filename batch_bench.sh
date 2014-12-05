@@ -35,4 +35,4 @@ export OMP_NUM_THREADS=8
 
 # use ibrun on stampede in order to use MPI
 # this will need to change when running in GallantLab
-ibrun python test.py --benchmark
+ibrun python test.py --benchmark $1
