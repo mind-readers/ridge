@@ -27,20 +27,20 @@ else:
 #   N=2000, M=30000, TR=10000, TP=2000
 # Use small data size for testing correctness
 if arg == "--test-correct":
-    N = 200
-    M = 3000
-    TR = 1000
-    TP = 200
+    #N = 200
+    #M = 3000
+    #TR = 1000
+    #TP = 200
 
     #N = 1900 # For some reason mpi in ridge() will break if this goes to 2000. Coincidence? I think not!
     #M = 60000
     #TR = 1000
     #TP = 200
 
-    #N = 2000
-    #M = 60000
-    #TR = 1000
-    #TP = 200
+    N = 2000
+    M = 60000
+    TR = 1000
+    TP = 200
 
     #N = 30000
     #M = 60000
