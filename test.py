@@ -5,6 +5,10 @@ from ridge import ridge, ridge_corr, bootstrap_ridge
 from mpi4py import MPI
 import sys
 import time
+import warnings
+
+#warnings.filterwarnings('error', message='*invalid value encountered in true*')
+warnings.filterwarnings('error', category=RuntimeWarning)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -23,14 +27,25 @@ else:
 #   N=2000, M=30000, TR=10000, TP=2000
 # Use small data size for testing correctness
 if arg == "--test-correct":
-    #N = 200
-    #M = 3000
-    #TR = 1000
-    #TP = 200
-    N = 1900 # For some reason mpi in ridge() will break if this goes to 2000. Coincidence? I think not!
-    M = 60000
+    N = 200
+    M = 3000
     TR = 1000
     TP = 200
+
+    #N = 1900 # For some reason mpi in ridge() will break if this goes to 2000. Coincidence? I think not!
+    #M = 60000
+    #TR = 1000
+    #TP = 200
+
+    #N = 2000
+    #M = 60000
+    #TR = 1000
+    #TP = 200
+
+    #N = 30000
+    #M = 60000
+    #TR = 1000
+    #TP = 200
 else:
     # N and M are 1/2 of what is used in practice
     N = 500 # features

@@ -84,7 +84,10 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
     print("Num unique alphas: %d" % (len(np.unique(nalphas)),))
 
     ualphas = np.unique(nalphas)
+    #wt = np.zeros((stim.shape[1], resp.shape[1]), order='F') # Make wt column major
     wt = np.zeros((stim.shape[1], resp.shape[1]), order='F') # Make wt column major
+    #wt = np.zeros((stim.shape[1], resp.shape[1]), order='C') # Make wt column major
+    #wt = np.ascontiguousarray(wt, dtype=np.float64)
     # Precompute all selvox values so each mpi job can operate on them independently
     all_selvox = [np.nonzero(nalphas==ualphas[i])[0] for i in range(len(ualphas))]
     num_mpi_rounds = len(ualphas) / size
@@ -103,13 +106,19 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
         ua = ualphas[c*size+rank]
         selvox = all_selvox[c*size+rank] # list of indices equal to ua
         awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
-        padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
+        #awt = np.ascontiguousarray(awt, dtype=np.float64)
+        #padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64, order='C')
+        padded_awt = np.zeros((wt.shape[0], maxlen_selvox), order='F')
+        #padded_awt = np.ascontiguousarray(padded_awt, dtype=np.float64)
         # Stick the awt inside padded_awt aligned from the top left corner
         padded_awt[:,:selvox.shape[0]] = awt
-        recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
-        comm.Barrier()
+        #recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64, order='C')
+        recv_awt = np.empty((wt.shape[0], maxlen_selvox*size), order='F')
+        #recv_awt = np.ascontiguousarray(recv_awt, dtype=np.float64)
+        #comm.Barrier()
         comm.Allgather(padded_awt, recv_awt)
-        recv_awt = np.vsplit(recv_awt, size)
+        #recv_awt = np.ascontiguousarray(recv_awt, dtype=np.float64)
+        recv_awt = np.hsplit(recv_awt, size)
         for i in range(size):
             wt[:,all_selvox[c*size+i]] = recv_awt[i][:,:all_selvox[c*size+i].shape[0]]
 
@@ -125,15 +134,23 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
             ua = ualphas[ualphas_rem+rank]
             selvox = all_selvox[ualphas_rem+rank] # list of indices equal to ua
             awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
-            padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
+            #awt = np.ascontiguousarray(awt, dtype=np.float64)
+            #padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64, order='C')
+            padded_awt = np.empty((wt.shape[0], maxlen_selvox), order='F')
+            #padded_awt = np.ascontiguousarray(padded_awt, dtype=np.float64)
             padded_awt[:,:selvox.shape[0]] = awt
         else:
             # this is just to create an array of the proper size to appease mpi
-            padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64)
-        recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64)
-        comm.Barrier()
+            #padded_awt = np.empty((wt.shape[0], maxlen_selvox), dtype=np.float64, order='C')
+            padded_awt = np.empty((wt.shape[0], maxlen_selvox), order='F')
+            #padded_awt = np.ascontiguousarray(padded_awt, dtype=np.float64)
+        #recv_awt = np.empty((wt.shape[0]*size, maxlen_selvox), dtype=np.float64, order='C')
+        recv_awt = np.empty((wt.shape[0], maxlen_selvox*size), order='F')
+        #recv_awt = np.ascontiguousarray(recv_awt, dtype=np.float64)
+        #comm.Barrier()
         comm.Allgather(padded_awt, recv_awt)
-        recv_awt = np.vsplit(recv_awt, size)
+        #recv_awt = np.ascontiguousarray(recv_awt, dtype=np.float64)
+        recv_awt = np.hsplit(recv_awt, size)
         for i in range(size):
             if i < remainder_rounds: # This is to pick out the real arrays
                 wt[:,all_selvox[ualphas_rem+i]] = recv_awt[i][:,:all_selvox[ualphas_rem+i].shape[0]]
