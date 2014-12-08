@@ -23,13 +23,13 @@ else:
 #   N=2000, M=30000, TR=10000, TP=2000
 # Use small data size for testing correctness
 if arg == "--test-correct":
-    N = 200
+    N = 400
     M = 3000
     TR = 1000
     TP = 200
 else:
     # N and M are 1/2 of what is used in practice
-    N = 500 # features
+    N = 30000 # features
     M = 60000 # response sources (voxels, whatever)
     TR = 1000 # regression timepoints
     TP = 200 # prediction timepoints
@@ -65,6 +65,7 @@ Rresp = responses[:TR]
 Presp = responses[TR:]
 Rstim = features[:TR]
 Pstim = features[TR:]
+Pstim = np.copy(Pstim, order='F')
 
 if arg == "--benchmark" and rank == 0:
     f = open("benchmark.log", "a")

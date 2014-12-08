@@ -5,12 +5,16 @@ from utils import mult_diag, counter
 import random
 import itertools as itools
 from mpi4py import MPI
+import time
 
+import pycuda.driver as cuda
 import pycuda.gpuarray as gpuarray
 import pycuda.autoinit
 import scikits.cuda.linalg as linalg
 import scikits.cuda.misc as misc
 linalg.init()
+
+import splitdot
 
 zs = lambda v: (v-v.mean(0))/v.std(0) ## z-score function
 
@@ -41,11 +45,25 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
     try:
         # TODO determine if this should be a GPU op
         # stim is TRxN (~1000x200 or 5000x15000)
+        # stim_gpu = gpuarray.to_gpu(stim)
+        # U_gpu, S_gpu, Vh_gpu = linalg.svd(stim, jobvt="O", jobu="O")
+        # U = U_gpu.get()
+        # S = S_gpu.get()
+        # del S_gpu
+        # del U_gpu
         U,S,Vh = np.linalg.svd(stim, full_matrices=False)
     except np.linalg.LinAlgError, e:
         logger.info("NORMAL SVD FAILED, trying more robust dgesvd..")
         from svd_dgesvd import svd_dgesvd
         U,S,Vh = svd_dgesvd(stim, full_matrices=False)
+
+     #origsize = S.shape[0]
+     #ngoodS = np.sum(S>singcutoff)
+     #nbad = origsize-ngoodS
+     #U = U[:,:ngoodS]
+     #S = S[:ngoodS]
+     #Vh = Vh[:ngoodS]
+
 
     # EXAMPLE FOR RUNNING GPU LINALG OPERATIONS
     # Export data to GPU
@@ -78,13 +96,37 @@ def ridge(stim, resp, alpha, singcutoff=1e-10, normalpha=False):
     # Compute weights for each alpha
     ualphas = np.unique(nalphas)
     wt = np.zeros((stim.shape[1], resp.shape[1]), order='F') # Make wt column major
+    Vh_gpu = gpuarray.to_gpu(np.copy(Vh, order='F'))
     for ua in ualphas:
         selvox = np.nonzero(nalphas==ua)[0] # list of indices equal to ua
         # TODO determine if this should be a GPU op
         # Vh is output from SVD, i think NxN (~200x200 or 15000x15000)
         # TODO determine how reduce works
-        awt = reduce(np.dot, [Vh.T, np.diag(S/(S**2+ua**2)), UR[:,selvox]])
-        wt[:,selvox] = awt
+        Sd = S/(S**2+ua**2)
+        Sd_gpu = gpuarray.to_gpu(Sd)
+        UR_gpu = gpuarray.to_gpu(np.copy(UR[:,selvox], order='F'))
+        linalg.dot_diag(Sd_gpu, UR_gpu, overwrite=True)
+        del Sd_gpu
+        if selvox.shape[0] > 5000:
+            N=selvox.shape[0]/4
+            inter_gpu = linalg.dot(Vh_gpu, UR_gpu[:,0:N], transa='T')
+            wt[:,selvox[0:N]] = inter_gpu.get()
+            del inter_gpu
+            inter_gpu = linalg.dot(Vh_gpu, UR_gpu[:,N:2*N], transa='T')
+            wt[:,selvox[N:2*N]] = inter_gpu.get()
+            del inter_gpu
+            inter_gpu = linalg.dot(Vh_gpu, UR_gpu[:,2*N:3*N], transa='T')
+            wt[:,selvox[2*N:3*N]] = inter_gpu.get()
+            del inter_gpu
+            inter_gpu = linalg.dot(Vh_gpu, UR_gpu[:,3*N:], transa='T')
+            wt[:,selvox[3*N:]] = inter_gpu.get()
+            del inter_gpu
+        else:
+            awt_gpu = linalg.dot(Vh_gpu, UR_gpu, transa='T')
+            wt[:,selvox] = awt_gpu.get()
+        del UR_gpu
+
+    del Vh_gpu
     return wt
     
 
@@ -416,7 +458,8 @@ def bootstrap_ridge(Rstim, Rresp, Pstim, Presp, alphas, nboots, chunklen, nchunk
 
     # Predict responses on prediction set
     logger.info("Predicting responses for predictions set..")
-    pred = np.dot(Pstim, wt)
+    #pred = np.dot(Pstim, wt)
+    pred = splitdot.left_dot_col_major_gpu(Pstim, wt)
 
     # Find prediction correlations
     nnpred = np.nan_to_num(pred)
